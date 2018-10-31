@@ -1,34 +1,40 @@
-package com.karaush.demo;
+package com.karaush.demo.models;
 
 import com.karaush.demo.validators.annotations.LocationConstraint;
 import com.karaush.demo.validators.annotations.TemperatureConstraint;
-import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 @Entity
 @Table(name = "measurements")
 public class Measurement {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    //@Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created", nullable = false)
+    private Date created;
+
+    @PrePersist
+    protected void onCreate() {
+        created = new Date();
+    }
+
     @LocationConstraint(lowerLimit = -90, upperLimit = 90)
-    @Column(name = "latitude")
+    @Column(name = "latitude", nullable = false)
     private Double latitude;
 
-    @NotNull
     @LocationConstraint(lowerLimit = -180, upperLimit = 180)
-    @Column(name = "longitude")
+    @Column(name = "longitude", nullable = false)
     private Double longitude;
 
     //in celsius
-    @NotNull
     @TemperatureConstraint
-    @Column(name = "temperature")
+    @Column(name = "temperature", nullable = false)
     private Double temperature;
 
     public Measurement(){}
@@ -61,8 +67,11 @@ public class Measurement {
         this.temperature = temperature;
     }
 
-    public void setId(Long id){
-        this.id = id;
+    public Date getCreated() {
+        return created;
     }
 
+    public void setCreated(Date created) {
+        this.created = created;
+    }
 }
