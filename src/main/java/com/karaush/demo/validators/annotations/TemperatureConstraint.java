@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TemperatureConstraint {
 
-    String message() default "Invalid phone number";
+    String message() default "Invalid temperature range";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

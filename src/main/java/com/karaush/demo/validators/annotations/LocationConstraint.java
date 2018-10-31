@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 public @interface LocationConstraint
 {
 
-    String message() default "{com.karaush.demo.validators.annotations.LocationConstraint}";
+    String message() default "Value is out of range";
 
     Class<?>[] groups() default {};
 
