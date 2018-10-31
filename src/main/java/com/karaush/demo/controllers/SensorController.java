@@ -1,6 +1,6 @@
 package com.karaush.demo.controllers;
 
-import com.karaush.demo.models.Measurement;
+import com.karaush.demo.models.Record;
 import com.karaush.demo.repositories.SensorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +12,8 @@ import java.util.List;
 @RestController
 public class SensorController {
 
+    private static final int recordsToKeep = 5;
+
     private final SensorRepository repository;
 
     @Autowired
@@ -20,24 +22,18 @@ public class SensorController {
     }
 
     @Transactional
-    @PostMapping("/measurements")
-    public void saveMeasurement(@RequestBody Measurement measurement){
+    @PostMapping("/records")
+    public void saveRecord(@RequestBody Record record){
 
-        //
-        if(repository.count() > 10){
+        repository.saveAndFlush(record);
+        if(repository.count() > recordsToKeep){
             repository.dropLast();
         }
-        repository.saveAndFlush(measurement);
-
-        List<Measurement> all = repository.retrieveSorted();
-        System.out.println("got all");
-        repository.dropLast();
-        all = repository.retrieveSorted();
     }
 
 
-    @GetMapping("/measurements")
-    public List<Measurement> getMeasurements(){
+    @GetMapping("/records")
+    public List<Record> getRecords(){
         return new ArrayList<>(repository.findAll());
     }
 }

@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(name = "measurements")
-public class Measurement {
+@Table(name = "records")
+public class Record {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,9 +37,9 @@ public class Measurement {
     @Column(name = "temperature", nullable = false)
     private Double temperature;
 
-    public Measurement(){}
+    public Record(){}
 
-    public Measurement(double latitude, double longitude, double temperature){
+    public Record(double latitude, double longitude, double temperature){
         this.longitude = longitude;
         this.latitude = latitude;
         this.temperature = temperature;
