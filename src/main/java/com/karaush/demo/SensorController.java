@@ -11,12 +11,10 @@ import java.util.List;
 public class SensorController {
 
     private final JpaRepository<Measurement, Long> repository;
-    private final JpaRepository<Dump, Long> dumpLongJpaRepository;
 
     @Autowired
-    public SensorController(JpaRepository<Measurement, Long> repository, JpaRepository<Dump, Long> dumpLongJpaRepository) {
+    public SensorController(JpaRepository<Measurement, Long> repository) {
         this.repository = repository;
-        this.dumpLongJpaRepository = dumpLongJpaRepository;
     }
 
     @PostMapping("/measurements")
@@ -28,11 +26,6 @@ public class SensorController {
         System.out.println("qwe");
     }
 
-    @PostMapping("/dump")
-    public void dump(@RequestBody Dump dump){
-
-        dumpLongJpaRepository.saveAndFlush(dump);
-    }
 
     @GetMapping("/measurements")
     public List<Measurement> getMeasurements(){

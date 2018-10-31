@@ -7,6 +7,3 @@ INSERT INTO measurements ( latitude, longitude, temperature, id) VALUES
 (6,  3.12856,  -19.917,    22),
 (7, -47.9162,  -41.61942,  19);
 
-INSERT INTO dump(id, data) VALUES
-(1, 4),
-(2,10);
