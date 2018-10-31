@@ -1,5 +1,6 @@
 package com.karaush.demo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.karaush.demo.validators.annotations.LocationConstraint;
 import com.karaush.demo.validators.annotations.TemperatureConstraint;
 
@@ -15,7 +16,7 @@ public class Record {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //@Temporal(TemporalType.TIMESTAMP)
+    @JsonIgnore
     @Column(name = "created", nullable = false)
     private Date created;
 

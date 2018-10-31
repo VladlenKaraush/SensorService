@@ -22,7 +22,7 @@ public class LocationValidator implements ConstraintValidator<LocationConstraint
     @Override
     public boolean isValid(Double contactField,
                            ConstraintValidatorContext cxt) {
-
-        return contactField <= upperLimit && contactField >= lowerLimit;
+        boolean valid = contactField <= upperLimit && contactField >= lowerLimit;
+        return valid;
     }
 }
