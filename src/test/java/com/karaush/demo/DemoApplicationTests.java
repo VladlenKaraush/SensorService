@@ -95,11 +95,29 @@ public class DemoApplicationTests {
     }
 
     @Test
-    public void shouldThrowInvalidParams() throws Exception {
-        Record testRecord = new Record(100,200,0);
-        mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(testRecord))
+    public void shouldThrowInvalidLatitude() throws Exception {
+        Record invalidLatitude = new Record(100,0,0);
+        mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(invalidLatitude))
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON));
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400));
     }
 
+    @Test
+    public void shouldThrowInvalidLongitude() throws Exception {
+        Record invalidLongitude = new Record(0,-200,0);
+        mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(invalidLongitude))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400));
+    }
+
+    @Test
+    public void shouldThrowInvalidTemperature() throws Exception {
+        Record invalidTemperature = new Record(0,0,150);
+        mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(invalidTemperature))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(400));
+    }
 }

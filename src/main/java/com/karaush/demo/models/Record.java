@@ -5,7 +5,6 @@ import com.karaush.demo.validators.annotations.LocationConstraint;
 import com.karaush.demo.validators.annotations.TemperatureConstraint;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
