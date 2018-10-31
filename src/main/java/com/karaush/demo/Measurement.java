@@ -1,11 +1,11 @@
 package com.karaush.demo;
 
+import com.karaush.demo.validators.annotations.LocationConstraint;
+import com.karaush.demo.validators.annotations.TemperatureConstraint;
 import org.hibernate.validator.constraints.Range;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.UUID;
 
 @Entity
 @Table(name = "measurements")
@@ -16,18 +16,18 @@ public class Measurement {
     private Long id;
 
     @NotNull
-    @Range(min = -90, max = 90)
+    @LocationConstraint(lowerLimit = -90, upperLimit = 90)
     @Column(name = "latitude")
     private Double latitude;
 
     @NotNull
-    @Range(min = -180, max = 180)
+    @LocationConstraint(lowerLimit = -180, upperLimit = 180)
     @Column(name = "longitude")
     private Double longitude;
 
     //in celsius
     @NotNull
-    @Range(min = -100, max = 100)
+    @TemperatureConstraint
     @Column(name = "temperature")
     private Double temperature;
 
