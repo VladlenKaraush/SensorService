@@ -11,14 +11,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -72,12 +65,9 @@ public class WebAppContext {
 
     Properties additionalProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
         properties.setProperty("hibernate.show_sql", "true");
         properties.setProperty("hibernate.format_sql", "true");
-//        properties.setProperty(
-//                "hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-
         return properties;
     }
 }

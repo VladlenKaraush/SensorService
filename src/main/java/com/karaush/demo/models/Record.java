@@ -24,13 +24,13 @@ public class Record {
         created = new Date();
     }
 
-    @LocationConstraint(lowerLimit = -90, upperLimit = 90)
+    @LocationConstraint(mode = "latitude")
     @Column(name = "latitude", nullable = false)
-    private Double latitude;
+    private String latitude;
 
-    @LocationConstraint(lowerLimit = -180, upperLimit = 180)
+    @LocationConstraint(mode = "longitude")
     @Column(name = "longitude", nullable = false)
-    private Double longitude;
+    private String longitude;
 
     //in celsius
     @TemperatureConstraint
@@ -39,27 +39,27 @@ public class Record {
 
     public Record(){}
 
-    public Record(double latitude, double longitude, double temperature){
+    public Record(String latitude, String longitude, double temperature){
         this.longitude = longitude;
         this.latitude = latitude;
         this.temperature = temperature;
     }
 
-    public double getLongitude(){
+    public String getLongitude(){
         return longitude;
     }
 
-    public double getLatitude(){
+    public String getLatitude(){
         return latitude;
     }
 
     public double getTemperature() { return temperature;}
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(String latitude) {
         this.latitude = latitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
 

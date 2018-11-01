@@ -4,25 +4,45 @@ import com.karaush.demo.validators.annotations.LocationConstraint;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.HashMap;
 
 /**
- * Basically @Range, but since you asked
+ *  Validator to check correct latitude and longitude format
  */
-public class LocationValidator implements ConstraintValidator<LocationConstraint, Double> {
+public class LocationValidator implements ConstraintValidator<LocationConstraint, String> {
 
-    private Double upperLimit;
-    private Double lowerLimit;
+    private String mode;
+    private static final HashMap<String, String> regexMap;
 
-    @Override
-    public void initialize(LocationConstraint contactNumber) {
-        this.upperLimit = contactNumber.upperLimit();
-        this.lowerLimit = contactNumber.lowerLimit();
+    /*
+     * correct and incorrect cases introduced in tests
+     */
+    static {
+        regexMap = new HashMap<>();
+        regexMap.put("latitude", "([+-]?([0-8]?[0-9]|90)° )?(([0-5]?[0-9]|60)′ )?(([0-5]?[0-9]|60)″ ?)?[NS]?");
+        regexMap.put("longitude", "([+-]?([0-9]{1,2}|1[0-7][0-9]|180)° )?(([0-5]?[0-9]|60)′ )?(([0-5]?[0-9]|60)″ )?[EW]?");
     }
 
     @Override
-    public boolean isValid(Double contactField,
+    public void initialize(LocationConstraint contactNumber) {
+        mode = contactNumber.mode();
+    }
+
+    @Override
+    public boolean isValid(String value,
                            ConstraintValidatorContext cxt) {
-        boolean valid = contactField <= upperLimit && contactField >= lowerLimit;
+        boolean valid = value.matches(regexMap.get(mode));
+        //-180 - 180
+        boolean test = "qwe".matches("^[+-]?([0-9]{0,2}|1[0-7][0-9]|180)$");
+        //-90 0 90
+        boolean test1 = "qwe".matches("^[+-]?([0-8]?[0-9]|90)$");
+
+        //0 - 60
+        boolean test3 = "qwe".matches("^([0-5]?[0-9]|60)$");
+
+        boolean lng = "qwe".matches("([+-]?([0-9]{1,2}|1[0-7][0-9]|180)° )?(([0-5]?[0-9]|60)′ )?(([0-5]?[0-9]|60)″ )?[EW]?");
+        boolean lat = "qwe".matches("([+-]?([0-8]?[0-9]|90)°)?(([0-5]?[0-9]|60)′ )?(([0-5]?[0-9]|60)″ ?)?[NS]?");
         return valid;
+
     }
 }

@@ -19,7 +19,5 @@ public @interface LocationConstraint
 
     Class<? extends Payload>[] payload() default {};
 
-    double upperLimit();
-
-    double lowerLimit();
+    String mode();
 }

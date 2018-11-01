@@ -24,6 +24,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContext;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -54,7 +57,7 @@ public class DemoApplicationTests {
         }
     }
     @Before
-	public void setup() throws Exception {
+	public void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}
 
@@ -68,23 +71,22 @@ public class DemoApplicationTests {
 	}
 
 	@Test
-    //@Sql({ "/data-h2.sql"})
     public void shouldInitDBfromScript() throws Exception {
 
     	    mockMvc.perform(get("/records")).andExpect(status().isOk()).andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("$[0].latitude").value(8))
-                .andExpect(jsonPath("$[0].longitude").value(83.12856))
-                .andExpect(jsonPath("$[0].temperature").value(-48.61942))
-                .andExpect(jsonPath("$[9].latitude").value(7))
-                .andExpect(jsonPath("$[9].longitude").value(-47.9162))
-                .andExpect(jsonPath("$[9].temperature").value(-41.61942));
+                .andExpect(jsonPath("$[0].latitude").value("51° 28′ 38″ N"))
+                .andExpect(jsonPath("$[0].longitude").value("2° 38″ E"))
+                .andExpect(jsonPath("$[0].temperature").value(12.4))
+                .andExpect(jsonPath("$[7].latitude").value("2″ S"))
+                .andExpect(jsonPath("$[7].longitude").value("51° 28′ 38″ E"))
+                .andExpect(jsonPath("$[7].temperature").value(22.5));
     }
 
     @Test
     public void shouldAddNewRecordAtFirstPosition() throws Exception {
 
-	    Record testRecord = new Record(0,0,0);
+	    Record testRecord = new Record("-51° 28′ 40″ N","+120° 38″ W",0);
 	    mockMvc.perform(MockMvcRequestBuilders.post("/records")
             .content(asJsonString(testRecord))
             .contentType(MediaType.APPLICATION_JSON)
@@ -93,35 +95,141 @@ public class DemoApplicationTests {
 
         mockMvc.perform(get("/records")).andExpect(status().isOk()).andDo(print())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$[0].latitude").value(0))
-            .andExpect(jsonPath("$[0].longitude").value(0))
+            .andExpect(jsonPath("$[0].latitude").value("-51° 28′ 40″ N"))
+            .andExpect(jsonPath("$[0].longitude").value("+120° 38″ W"))
             .andExpect(jsonPath("$[0].temperature").value(0));
     }
 
     @Test
-    public void shouldThrowInvalidLatitude() throws Exception {
-        Record invalidLatitude = new Record(100,0,0);
-        mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(invalidLatitude))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(400));
+    public void shouldAcceptValidLatitude() throws Exception{
+        final Set<String> validLatitudeSet = new HashSet<>();
+
+        //baseline case
+        validLatitudeSet.add("51° 28′ 1″ N");
+
+        //can omit degrees, minutes, seconds and direction
+        validLatitudeSet.add("28′ 1″ N");
+        validLatitudeSet.add("51° 1″ N");
+        validLatitudeSet.add("51° 28′ N");
+        validLatitudeSet.add("51° 28′ 1″ ");
+
+        //bounds for degrees are [-90; 90]
+        validLatitudeSet.add("90° ");
+        validLatitudeSet.add("+90° ");
+        validLatitudeSet.add("-90° ");
+
+        //bounds for minutes and seconds are [0; 60]
+        validLatitudeSet.add("60′ 0″ ");
+        validLatitudeSet.add("0′ 60″ ");
+
+        Record validLatitude = new Record("","2° 38″ E",0);
+
+        for(String latitude: validLatitudeSet){
+            validLatitude.setLatitude(latitude);
+            mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(validLatitude))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        }
+
     }
 
     @Test
-    public void shouldThrowInvalidLongitude() throws Exception {
-        Record invalidLongitude = new Record(0,-200,0);
-        mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(invalidLongitude))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(400));
+    public void shouldRejectInvalidLatitude() throws Exception{
+        final Set<String> invalidLatitudeSet = new HashSet<>();
+
+        //cannot omit °, " and ′
+        invalidLatitudeSet.add("51");
+        invalidLatitudeSet.add("51° 28 1″ N");
+        invalidLatitudeSet.add("51° 28′ 1 N");
+
+
+        //bounds for degrees are [-90; 90]
+        invalidLatitudeSet.add("+91° ");
+        invalidLatitudeSet.add("-91° ");
+
+        //bounds for minutes and seconds are [0; 60]
+        invalidLatitudeSet.add("61′ ");
+        invalidLatitudeSet.add("-1′ ");
+        invalidLatitudeSet.add("61″ ");
+        invalidLatitudeSet.add("-1″ ");
+
+        Record validLatitude = new Record("","2° 38″ E",0);
+
+        for(String latitude: invalidLatitudeSet){
+            validLatitude.setLatitude(latitude);
+            mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(validLatitude))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().is(400));
+        }
+
     }
 
     @Test
-    public void shouldThrowInvalidTemperature() throws Exception {
-        Record invalidTemperature = new Record(0,0,150);
-        mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(invalidTemperature))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(400));
+    public void shouldAcceptValidLongitude() throws Exception{
+        final Set<String> validLongitudeSet = new HashSet<>();
+
+        //baseline case
+        validLongitudeSet.add("120° 43′ 12″ E");
+
+        //can omit degrees, minutes, seconds and direction
+        validLongitudeSet.add("43′ 12″ E");
+        validLongitudeSet.add("120° 12″ E");
+        validLongitudeSet.add("120° 43′ E");
+        validLongitudeSet.add("120° 43′ 12″ ");
+
+        //bounds for degrees are [-180; 180]
+        validLongitudeSet.add("180° ");
+        validLongitudeSet.add("+180° ");
+        validLongitudeSet.add("-180° ");
+
+        //bounds for minutes and seconds are [0; 60]
+        validLongitudeSet.add("60′ 0″ ");
+        validLongitudeSet.add("0′ 60″ ");
+
+        Record validLatitude = new Record("","2° 38″ E",0);
+
+        for(String longitude: validLongitudeSet){
+            validLatitude.setLongitude(longitude);
+            mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(validLatitude))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        }
+
     }
+
+    @Test
+    public void shouldRejectInvalidLongitude() throws Exception{
+        final Set<String> invalidLongitudeSet = new HashSet<>();
+
+        //cannot omit °, " and ′
+        invalidLongitudeSet.add("120 43′ 12″ E");
+        invalidLongitudeSet.add("120° 43 12″ E");
+        invalidLongitudeSet.add("120° 43′ 12 E");
+
+        //bounds for degrees are [-180; 180]
+        invalidLongitudeSet.add("+181° ");
+        invalidLongitudeSet.add("-181° ");
+        invalidLongitudeSet.add("181° ");
+
+        //bounds for minutes and seconds are [0; 60]
+        invalidLongitudeSet.add("61′ ");
+        invalidLongitudeSet.add("-1′ ");
+        invalidLongitudeSet.add("61″ ");
+        invalidLongitudeSet.add("-1″ ");
+
+        Record validLatitude = new Record("51° 28′ 38″ N","",0);
+
+        for(String longitude: invalidLongitudeSet){
+            validLatitude.setLongitude(longitude);
+            mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(validLatitude))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().is(400));
+        }
+
+    }
+
 }
