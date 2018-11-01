@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,6 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @EnableJpaRepositories(basePackageClasses = RecordRepository.class)
 @ContextConfiguration(classes = {WebAppContext.class})
+@SqlGroup({
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "/data-h2.sql"),
+        @Sql(executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, scripts = "/clean_db.sql")
+})
 @WebAppConfiguration
 public class DemoApplicationTests {
 
@@ -63,7 +68,7 @@ public class DemoApplicationTests {
 	}
 
 	@Test
-    @Sql({ "/data-h2.sql"})
+    //@Sql({ "/data-h2.sql"})
     public void shouldInitDBfromScript() throws Exception {
 
     	    mockMvc.perform(get("/records")).andExpect(status().isOk()).andDo(print())
@@ -77,8 +82,7 @@ public class DemoApplicationTests {
     }
 
     @Test
-    @Sql({ "/data-h2.sql"})
-    public void shouldAddNewRecordAndDeleteLast() throws Exception {
+    public void shouldAddNewRecordAtFirstPosition() throws Exception {
 
 	    Record testRecord = new Record(0,0,0);
 	    mockMvc.perform(MockMvcRequestBuilders.post("/records")
