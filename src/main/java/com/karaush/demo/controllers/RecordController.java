@@ -21,6 +21,7 @@ public class RecordController {
         this.repository = repository;
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @Transactional
     @PostMapping("/records")
     public void saveRecord(@Valid @RequestBody Record record){
@@ -31,6 +32,7 @@ public class RecordController {
         }
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/records")
     public List<Record> getRecords(){
         return repository.fetchAllSortedByDate();
