@@ -37,12 +37,32 @@ public class Record {
     @Column(name = "temperature", nullable = false)
     private Double temperature;
 
+    @Column(name = "city", nullable = true)
+    private String city;
+
     public Record(){}
 
     public Record(String latitude, String longitude, double temperature){
         this.longitude = longitude;
         this.latitude = latitude;
         this.temperature = temperature;
+        this.city = " - ";
+    }
+
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public Record(String latitude, String longitude, double temperature, String city){
+        this.longitude = longitude;
+        this.latitude = latitude;
+        this.temperature = temperature;
+        this.city = city;
     }
 
     public String getLongitude(){

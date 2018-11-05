@@ -75,8 +75,8 @@ public class DemoApplicationTests {
 
     	    mockMvc.perform(get("/records")).andExpect(status().isOk()).andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath("$[0].latitude").value("51° 28′ 38″ N"))
-                .andExpect(jsonPath("$[0].longitude").value("2° 38″ E"))
+                .andExpect(jsonPath("$[0].latitude").value("59.9343° 1.1′ 3.63″ N"))
+                .andExpect(jsonPath("$[0].longitude").value("30.3351° 3.22″ E"))
                 .andExpect(jsonPath("$[0].temperature").value(12.4))
                 .andExpect(jsonPath("$[7].latitude").value("2″ S"))
                 .andExpect(jsonPath("$[7].longitude").value("51° 28′ 38″ E"))
@@ -107,6 +107,12 @@ public class DemoApplicationTests {
         //baseline case
         validLatitudeSet.add("51° 28′ 1″ N");
 
+        //floating point numbers allowed
+        validLatitudeSet.add("51.32° 28′ 1″ N");
+        validLatitudeSet.add("51° 28.421′ 1″ N");
+        validLatitudeSet.add("51° 28′ 1.412″ N");
+        validLatitudeSet.add("51° 28.′ 1″ N");
+
         //can omit degrees, minutes, seconds and direction
         validLatitudeSet.add("28′ 1″ N");
         validLatitudeSet.add("51° 1″ N");
@@ -126,6 +132,7 @@ public class DemoApplicationTests {
 
         for(String latitude: validLatitudeSet){
             validLatitude.setLatitude(latitude);
+            System.out.println(latitude);
             mockMvc.perform(MockMvcRequestBuilders.post("/records").content(asJsonString(validLatitude))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -178,6 +185,11 @@ public class DemoApplicationTests {
         validLongitudeSet.add("120° 12″ E");
         validLongitudeSet.add("120° 43′ E");
         validLongitudeSet.add("120° 43′ 12″ ");
+
+        //floating point numbers allowed
+        validLongitudeSet.add("120.867° 43′ 12″ ");
+        validLongitudeSet.add("120° 43.123′ 12″ ");
+        validLongitudeSet.add("120° 43′ 12.111″ ");
 
         //bounds for degrees are [-180; 180]
         validLongitudeSet.add("180° ");

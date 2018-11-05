@@ -19,8 +19,8 @@ public class LocationValidator implements ConstraintValidator<LocationConstraint
      */
     static {
         regexMap = new HashMap<>();
-        regexMap.put("latitude", "([+-]?([0-8]?[0-9]|90)° )?(([0-5]?[0-9]|60)′ )?(([0-5]?[0-9]|60)″ ?)?[NS]?");
-        regexMap.put("longitude", "([+-]?([0-9]{1,2}|1[0-7][0-9]|180)° )?(([0-5]?[0-9]|60)′ )?(([0-5]?[0-9]|60)″ )?[EW]?");
+        regexMap.put("latitude", "([+-]?([0-8]?[0-9]|90)(\\.[0-9]*)?° )?(([0-5]?[0-9]|60)(\\.[0-9]*)?′ )?(([0-5]?[0-9]|60)(\\.[0-9]*)?″ ?)?[NS]?");
+        regexMap.put("longitude", "([+-]?([0-9]{1,2}|1[0-7][0-9]|180)(\\.[0-9]*)?° )?(([0-5]?[0-9]|60)(\\.[0-9]*)?′ )?(([0-5]?[0-9]|60)(\\.[0-9]*)?″ )?[EW]?");
     }
 
     @Override
@@ -38,10 +38,10 @@ public class LocationValidator implements ConstraintValidator<LocationConstraint
         boolean test1 = "qwe".matches("^[+-]?([0-8]?[0-9]|90)$");
 
         //0 - 60
-        boolean test3 = "qwe".matches("^([0-5]?[0-9]|60)$");
+        boolean test3 = "qwe".matches("^\\d+(\\.\\d+)?");
 
-        boolean lng = "qwe".matches("([+-]?([0-9]{1,2}|1[0-7][0-9]|180)° )?(([0-5]?[0-9]|60)′ )?(([0-5]?[0-9]|60)″ )?[EW]?");
-        boolean lat = "qwe".matches("([+-]?([0-8]?[0-9]|90)°)?(([0-5]?[0-9]|60)′ )?(([0-5]?[0-9]|60)″ ?)?[NS]?");
+        boolean lng = "qwe".matches("([+-]?([0-9]{1,2}|1[0-7][0-9]|180)(\\.[0-9]*)?° )?(([0-5]?[0-9]|60)(\\.[0-9]*)?′ )?(([0-5]?[0-9]|60)(\\.[0-9]*)?″ )?[EW]?");
+        boolean lat = "qwe".matches("([+-]?([0-8]?[0-9]|90)(\\.[0-9]*)?° )?(([0-5]?[0-9]|60)(\\.[0-9]*)?′ )?(([0-5]?[0-9]|60)(\\.[0-9]*)?″ ?)?[NS]?");
         return valid;
 
     }
